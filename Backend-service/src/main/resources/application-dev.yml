@@ -1,0 +1,37 @@
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+spring:
+  config:
+    activate:
+      on-profile: dev
+  devtools:
+    add-properties: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/Khach_San_Test
+    username: postgres
+    password: 1
+#  sendgrid:
+#    api-key:
+#    from-email: batmicay@gmail.com
+
+jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+
+openapi:
+  service:
+    api-docs: backend-service
+    title: Backend API Document
+    version: v1.0.0
+    server: http://localhost:8080
+jwt:
+  secretKey: abc@123
+
+
