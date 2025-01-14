@@ -42,7 +42,6 @@ public class AppConfig {
         return http.build();
     }
 
-
     @Bean
     public WebSecurityCustomizer ignoreResources() {
         return web -> web.ignoring()
@@ -84,9 +83,6 @@ public class AppConfig {
         authProvider.setUserDetailsService(customerDetailService.CustomerDetailService());
         return authProvider;
     }
-
-
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {

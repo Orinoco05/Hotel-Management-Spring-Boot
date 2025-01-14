@@ -8,6 +8,6 @@ import org.springframework.stereotype.Service;
 public record CustomerDetailService(CustomerRepository customerRepository) {
 
     public UserDetailsService CustomerDetailService() {
-        return customerRepository::findByName;
+        return customerRepository::findByEmail;
     }
 }

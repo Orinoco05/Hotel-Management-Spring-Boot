@@ -37,4 +37,9 @@ jwt:
   accessKey: IIwLeRIVsznVTPFEYmA6HiVVBrlKkKqC36OpWzqw8mk=
   refreshKey: tvszknimPZQEdy3c9TCERBLAkOyoCc2ZvOmGcHsRJgg==
 
+logging:
+  level:
+    org:
+      springframework:
+        security=DEBUG:
 

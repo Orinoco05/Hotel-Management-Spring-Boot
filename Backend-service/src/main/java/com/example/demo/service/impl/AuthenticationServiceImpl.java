@@ -37,7 +37,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         try {
             // Thực hiện xác thực với username và password
-            Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+            UsernamePasswordAuthenticationToken userToken = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword());
+            Authentication authenticate = authenticationManager.authenticate(userToken);
 
             log.info("isAuthenticated = {}", authenticate.isAuthenticated());
             log.info("Authorities: {}", authenticate.getAuthorities().toString());
