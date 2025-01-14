@@ -1,6 +1,8 @@
 package com.example.demo.config;
 
 import com.example.demo.service.impl.CustomerDetailService;
+import com.google.gson.Gson;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +13,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -19,28 +20,25 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+
 @Configuration
 @RequiredArgsConstructor
 public class AppConfig {
 
-//    @Value("${spring.sendgrid.api-key}")
-//    private String sendgridApiKey;
 
+    private final String[] whitelistedUrls = {"/auth/**"};
     private final CustomizeRequestFilter requestFilter;
     private final CustomerDetailService customerDetailService;
 
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable) // Vô hiệu hóa CSRF
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll() // Cho phép tất cả các request
-                        .anyRequest().authenticated()      // Yêu cầu xác thực với các request khác
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Không duy trì session (stateless)
-                        .disable().authenticationProvider(authenticationProvider()).addFilterBefore(requestFilter, UsernamePasswordAuthenticationFilter.class)
-                );
+        http.csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(request -> request.requestMatchers(whitelistedUrls).permitAll()
+                        .anyRequest().authenticated())
+                .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
+                .authenticationProvider(authenticationProvider()).addFilterBefore(requestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -63,13 +61,13 @@ public class AppConfig {
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**") // Áp dụng cho tất cả các đường dẫn
-                        .allowedOrigins("*") // Cho phép tất cả các nguồn
-                        .allowedMethods("GET", "POST", "PUT", "DELETE") // Các phương thức HTTP được phép
-                        .allowedHeaders("*") // Tất cả các header được phép
-                        .allowCredentials(false) // Không cho phép gửi cookie
-                        .maxAge(3600); // Thời gian cache preflight request (3600 giây)
+            public void addCorsMappings(@NonNull CorsRegistry registry) {
+                registry.addMapping("**")
+                        .allowedOrigins("http://localhost:8500")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE") // Allowed HTTP methods
+                        .allowedHeaders("*") // Allowed request headers
+                        .allowCredentials(false)
+                        .maxAge(3600);
             }
         };
     }
@@ -96,8 +94,12 @@ public class AppConfig {
     }
 
 //    @Bean
-//    public SendGrid sendGrid() {
-//        return new SendGrid();
+//    public SendGrid(@Value("${spring.sendGrid.apiKey}") String apiKey) {
+//        return new SendGrid(apiKey);
 //    }
 
+    @Bean
+    public Gson gson() {
+        return new Gson();
+    }
 }
